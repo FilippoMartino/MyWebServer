@@ -52,7 +52,7 @@ int main (int argc, char const *argv[]){
 
   while(true){
 
-    ServerConnection* conn = myself->accept();
+    ServerConnection* conn = myself->accept_connection();
     /*
 
     		Dobbiamo mallocare la uno spazio in memoria
