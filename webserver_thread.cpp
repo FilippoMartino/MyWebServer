@@ -22,30 +22,22 @@ typedef struct {
 
 void* request(void* params) {
 
-	printf("[Webserver thread] eccomi\n");
   // Mi prendo la risposta da fornire al client
   static char* home =	 strdup(HOME);
 
-	printf("[Webserver thread] Ho copiato la stringa di risposta in una variabile\n");
   // Lo si fa per il casting
   Params* p = (Params*) params;
-	printf("[Webserver thread] Ho castato la struttura in arrivo in una varabile\n");
   // Salvo i valori puntati in due variabili locali
   ServerConnection* conn = (ServerConnection*) p->conn;
   ServerTcp* myself = (ServerTcp*) p->myself;
-	printf("[Webserver thread] Ho creato le due variabili e ho inserito in loro i valori in arrivo dalla struttura\n");
   // elimino i parametri dallo heap
-	printf("[Webserver thread] Ho deallocato la struttura dallo heap\n");
   free(p);
   // Ricevo le richieste
   char* richiesta_client = conn->receive_message();
-	printf("[Webserver thread] Ho ricevuto la richiesta dal client (%s)\n", richiesta_client);
   // Invio le risposte
   conn->send_message(home);
-	printf("[Webserver thread] Ho inviato la risposta\n");
 		// Disconnetto questa conn dalla lista
   myself->disconnect(conn);
-	printf("[Webserver thread] Mi sono disconnesso\n");
   // Termino il thread
   pthread_exit(NULL);
 
@@ -58,13 +50,10 @@ int main (int argc, char const *argv[]){
 		// Idea di Wang, far diventare questo un SINGLETON (DP GOF)
   ServerTcp* myself = new ServerTcp(port);
 
-	printf("[webServer] Ho creato l'oggetto\n");
-
   while(true){
 
     ServerConnection* conn = myself->accept_connection();
 
-		printf("[webServer] Ho accettato la connessione\n");
     /*
 
     		Dobbiamo mallocare la uno spazio in memoria
@@ -84,27 +73,18 @@ int main (int argc, char const *argv[]){
 
 				Params* params = (Params*) malloc(sizeof(Params));
 
-				printf("[webServer] Ho creato lo spazio in memoria per la strutture Params\n");
 				// Assegno i valori all'area di memoria
 				params->conn = conn;
 				params->myself = myself;
 
-				printf("[webServer] Ho assegnato le variabili alla struttura\n");
-
-				// Alloco il thread_id
+		// Alloco il thread_id
     pthread_t thread_id;
     // Creo il thread che verrà messo in coda dal gestore di processi
     pthread_create(&thread_id, NULL, request,	 (void*) params);
 
-		printf("[webServer] Ho creato il thread\n");
-
   }
 
-	printf("Sto per fare la delete\n");
-
   delete(myself);
-
-	printf("[webServer] Ho deallocato lo spazio occupato dall'oggetto serverTcp\n");
 
   return 0;
 
