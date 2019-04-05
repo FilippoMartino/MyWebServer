@@ -1,4 +1,5 @@
 #include "./SocketTcp/socket_tcp.hpp"
+#define FILE_NAME "index.html"
 
 #define HOME "HTTP/1.1 200 OK\n\
 Date: Wed, 19 Apr 2017 16:34:20 GMT\n\
@@ -23,62 +24,7 @@ typedef struct {
 
 } Params;
 
-int get_file_size(char* filename){
-
-	FILE *fp;
-	long lSize;
-
-	fp = fopen(filename, "r");
-  if (fp == NULL){
-      printf("An error has ecoured when opening the file\n");
-  }
-
-	fseek (fp , 0 , SEEK_END);
-	lSize = ftell(fp);
-
-	return lSize;
-
-}
-
-char* read_file(char* filename){
-
-	FILE *fp;
-	long lSize;
-	char * buffer;
-	size_t result;
-
-  fp = fopen(filename, "r");
-  if (fp == NULL){
-      printf("An error has ecoured when opening the file\n");
-  }
-
-	// calcolo la lunghezza del file
-	fseek (fp , 0 , SEEK_END);
-	lSize = ftell(fp);
-
-	// torniamo all'inizio del file
-	rewind(fp);
-
-	// alloco la memoria per contenere l'intero file
-	buffer = (char*) malloc ( sizeof ( char ) * lSize );
-
-	// copio il file nel buffer
-	result = fread (buffer, 1, lSize, fp);
-
-	//Se il file non esiste
-	if (result != lSize)
-		return strdup("Error");
-
-	fclose (fp);
-
-	return buffer;
-
-}
-
 void* request(void* params) {
-
-  // Mi prendo la risposta da fornire al client
-  static char* home =	 strdup(HOME);
 
   // Lo si fa per il casting
   Params* p = (Params*) params;
@@ -88,24 +34,13 @@ void* request(void* params) {
   // elimino i parametri dallo heap
   free(p);
   // Ricevo le richieste
-  char* richiesta_client = conn->receive_message();
+  char* rqst = conn->receive_message();
+	printf("Richiesta arrivata dal client: %s, invio la risposta\n", rqst);
   // Invio le risposte
-
-/*	long lSize = get_file_size("index.html");
-	char* page = (char*) malloc ( sizeof ( char ) * lSize );
-
-
-	page = read_file("index.html");
-	printf("page ->%s\n", page);
-
-	conn->send_message(page);
-	printf("Pagina inviata\n");
-
-*/
-    conn->send_message(home);
-	// Disconnetto questa conn dalla lista
+  conn->send_html(strdup("index.html"));
+		// Disconnetto questa conn dalla lista
   myself->disconnect(conn);
-  // Termino il thread
+  // Termino il threadz
   pthread_exit(NULL);
 
 }
