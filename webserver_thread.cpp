@@ -1,9 +1,16 @@
-#include "socket_tcp.hpp"
+#include "./SocketTcp/socket_tcp.hpp"
 
 #define HOME "HTTP/1.1 200 OK\n\
 Date: Wed, 19 Apr 2017 16:34:20 GMT\n\
 Content-Type: text/html; charset=UTF-8\n\
-"
+\n <!DOCTYPE html>\n\
+<html class=\"client-nojs\" lang=\"it\" dir=\"ltr\">\n\
+<head>\n\
+<title>web site</title>\n\
+<body>\n\
+<h1>Hello world</h1>\n\
+</body>\n\
+</html>"
 
 #define ERROR_FILE_MISSING "Error 404: file not found"
 #define MAXCHAR 1000
@@ -84,7 +91,7 @@ void* request(void* params) {
   char* richiesta_client = conn->receive_message();
   // Invio le risposte
 
-	long lSize = get_file_size("index.html");
+/*	long lSize = get_file_size("index.html");
 	char* page = (char*) malloc ( sizeof ( char ) * lSize );
 
 
@@ -93,6 +100,9 @@ void* request(void* params) {
 
 	conn->send_message(page);
 	printf("Pagina inviata\n");
+
+*/
+    conn->send_message(home);
 	// Disconnetto questa conn dalla lista
   myself->disconnect(conn);
   // Termino il thread
